@@ -1,0 +1,364 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>宝可梦自定义评分图鉴</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f8f9fa;
+            padding: 15px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #e33535;
+            margin: 20px 0;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        /* 搜索框 */
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            outline: none;
+            transition: border 0.3s;
+            margin-bottom: 20px;
+        }
+        .search-box:focus {
+            border-color: #e33535;
+        }
+        /* 卡片列表 */
+        .pokemon-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        /* 单个卡片 */
+        .pokemon-card {
+            background: white;
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 15px;
+            transition: transform 0.2s;
+        }
+        .pokemon-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+        /* 左侧图片 */
+        .card-left {
+            flex-shrink: 0;
+            width: 100px;
+            height: 100px;
+        }
+        .card-left img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #f0f0f0;
+            border-radius: 20px;
+            padding: 8px;
+        }
+        /* 右侧内容 */
+        .card-right {
+            flex: 1;
+            min-width: 0; /* 防止文字溢出 */
+        }
+        /* 标题行：名字 + 偏好标签 */
+        .title-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .pokemon-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .preference-tag {
+            background: #e33535;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        /* 评分网格：四项评分 */
+        .scores-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px 15px;
+            margin: 12px 0;
+        }
+        .score-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .score-label {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .score-value {
+            font-weight: bold;
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.9em;
+            color: #2c3e50;
+        }
+        .score-value.high {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        .score-value.medium {
+            background: #fff9c4;
+            color: #f57f17;
+        }
+        .score-value.low {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+        /* 总分行 */
+        .total-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 8px 0 10px;
+            padding-top: 8px;
+            border-top: 1px dashed #ddd;
+        }
+        .total-label {
+            font-weight: 600;
+            color: #333;
+        }
+        .total-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #e33535;
+            background: #fff3f0;
+            padding: 4px 16px;
+            border-radius: 40px;
+        }
+        /* 评分解释 */
+        .description {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            border-radius: 16px;
+            font-size: 0.9em;
+            color: #2c3e50;
+            line-height: 1.4;
+            border-left: 4px solid #e33535;
+        }
+        /* 翻页控件 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0 20px;
+        }
+        .pagination button {
+            background: #e33535;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .pagination button:hover {
+            background: #c62828;
+        }
+        .pagination button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .page-info {
+            font-size: 16px;
+            color: #555;
+        }
+        .no-result {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.2em;
+        }
+        /* 辅助类 */
+        .text-small {
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ 宝可梦评分图鉴</h1>
+        
+        <input type="text" id="searchInput" class="search-box" placeholder="搜索宝可梦名字...">
+
+        <div id="pokemonList" class="pokemon-list"></div>
+
+        <div class="pagination">
+            <button id="prevBtn" disabled>上一页</button>
+            <span id="pageInfo" class="page-info">第 1 页</span>
+            <button id="nextBtn">下一页</button>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        // 数据来自 data.js 的 pokemonList
+        let fullList = pokemonList;
+        // 按名字拼音排序
+        fullList.sort((a, b) => a.name.localeCompare(b.name, 'zh'));
+        let filteredList = [...fullList];
+        let currentPage = 1;
+        const pageSize = 5;  // 每页显示10个
+
+        // 获取 DOM 元素
+        const pokemonListDiv = document.getElementById('pokemonList');
+        const searchInput = document.getElementById('searchInput');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageInfo = document.getElementById('pageInfo');
+
+        // 辅助函数：根据分数返回对应的 CSS 类（高/中/低）
+        function getScoreClass(score) {
+            if (score >= 8) return 'high';
+            if (score >= 6) return 'medium';
+            return 'low';
+        }
+
+        // 渲染卡片列表
+        function renderList() {
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredList.slice(start, end);
+
+            if (pageData.length === 0) {
+                pokemonListDiv.innerHTML = '<div class="no-result">没有找到符合条件的宝可梦</div>';
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+                pageInfo.innerText = '第 0 页';
+                return;
+            }
+
+            let html = '';
+            pageData.forEach(p => {
+                // 计算总分
+                const total = (p.envScore || 0) + (p.abilityScore || 0) + (p.raceScore || 0) + (p.movepoolScore || 0);
+                
+                // 为每个评分项添加颜色类
+                const envClass = getScoreClass(p.envScore);
+                const abilityClass = getScoreClass(p.abilityScore);
+                const raceClass = getScoreClass(p.raceScore);
+                const movepoolClass = getScoreClass(p.movepoolScore);
+
+                html += `
+                    <div class="pokemon-card">
+                        <div class="card-left">
+                            <img src="${p.imageUrl}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/100?text=?'">
+                        </div>
+                        <div class="card-right">
+                            <div class="title-row">
+                                <span class="pokemon-name">${p.name}</span>
+                                <span class="preference-tag">${p.preference}</span>
+                            </div>
+                            <div class="scores-grid">
+                                <div class="score-item">
+                                    <span class="score-label">环境</span>
+                                    <span class="score-value ${envClass}">${p.envScore}</span>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-label">特性</span>
+                                    <span class="score-value ${abilityClass}">${p.abilityScore}</span>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-label">有效种族</span>
+                                    <span class="score-value ${raceClass}">${p.raceScore}</span>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-label">技能池</span>
+                                    <span class="score-value ${movepoolClass}">${p.movepoolScore}</span>
+                                </div>
+                            </div>
+                            <div class="total-row">
+                                <span class="total-label">总分</span>
+                                <span class="total-value">${total} / 40</span>
+                            </div>
+                            <div class="description">
+                                ${p.description || '暂无解释'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            pokemonListDiv.innerHTML = html;
+
+            // 更新分页信息
+            const totalPages = Math.ceil(filteredList.length / pageSize);
+            pageInfo.innerText = `第 ${currentPage} 页 / 共 ${totalPages} 页`;
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        // 搜索功能
+        searchInput.addEventListener('input', function(e) {
+            const keyword = e.target.value.trim().toLowerCase();
+            if (keyword === '') {
+                filteredList = [...fullList];
+            } else {
+                filteredList = fullList.filter(p => p.name.toLowerCase().includes(keyword));
+            }
+            currentPage = 1;
+            renderList();
+        });
+
+        // 上一页
+        prevBtn.addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderList();
+            }
+        });
+
+        // 下一页
+        nextBtn.addEventListener('click', function() {
+            const totalPages = Math.ceil(filteredList.length / pageSize);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderList();
+            }
+        });
+
+        // 初始化
+        renderList();
+    </script>
+</body>
+</html>
