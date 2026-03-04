@@ -29,6 +29,15 @@
             justify-content: center;
             gap: 8px;
         }
+        .type-tag {
+            background: #e0e0e0;      /* 灰色背景，区别于偏好标签 */
+                color: #2c3e50;
+                padding: 4px 12px;
+                border-radius: 30px;
+                font-size: 0.8em;
+                font-weight: 500;
+                white-space: nowrap;      /* 防止属性文字换行 */
+        }
         /* 搜索框 */
         .search-box {
             width: 100%;
@@ -217,9 +226,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>⚡ 宝可梦评分图鉴</h1>
+        <h1>⭐ 星星杯宝可梦评分 ⭐</h1>
         
-        <input type="text" id="searchInput" class="search-box" placeholder="搜索宝可梦名字...">
+        <input type="text" id="searchInput" class="search-box" placeholder="可以搜索名字或属性">
 
         <div id="pokemonList" class="pokemon-list"></div>
 
@@ -260,6 +269,7 @@
             const end = start + pageSize;
             const pageData = filteredList.slice(start, end);
 
+
             if (pageData.length === 0) {
                 pokemonListDiv.innerHTML = '<div class="no-result">没有找到符合条件的宝可梦</div>';
                 prevBtn.disabled = true;
@@ -288,6 +298,7 @@
                             <div class="title-row">
                                 <span class="pokemon-name">${p.name}</span>
                                 <span class="preference-tag">${p.preference}</span>
+                                ${p.types ? `<span class="type-tag">${p.types.join(' / ')}</span>` : ''}
                             </div>
                             <div class="scores-grid">
                                 <div class="score-item">
@@ -330,15 +341,21 @@
 
         // 搜索功能
         searchInput.addEventListener('input', function(e) {
-            const keyword = e.target.value.trim().toLowerCase();
-            if (keyword === '') {
-                filteredList = [...fullList];
-            } else {
-                filteredList = fullList.filter(p => p.name.toLowerCase().includes(keyword));
-            }
-            currentPage = 1;
-            renderList();
-        });
+  const keyword = e.target.value.trim().toLowerCase();
+  if (keyword === '') {
+    filteredList = [...fullList];
+  } else {
+    filteredList = fullList.filter(p => {
+      // 搜索名字
+      const nameMatch = p.name.toLowerCase().includes(keyword);
+      // 搜索属性（如果有 types 字段）
+      const typeMatch = p.types && p.types.some(t => t.toLowerCase().includes(keyword));
+      return nameMatch || typeMatch;
+    });
+  }
+  currentPage = 1;
+  renderList();
+});
 
         // 上一页
         prevBtn.addEventListener('click', function() {

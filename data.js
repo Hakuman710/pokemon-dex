@@ -2,6 +2,7 @@
 const pokemonList = [
   {
     name: '狐大盗（闪光）',
+    types: ['恶'], 
     preference: '输出',           // 偏好：输出/肉盾/辅助/全能
     envScore: 7.5,                  // 环境评分 0-10
     abilityScore: 9.5,              // 特性评分 0-10
@@ -13,6 +14,7 @@ const pokemonList = [
   },
   {
     name: '喷火龙',
+    types: ['火', '飞'], 
     preference: '输出',
     envScore: 7,
     abilityScore: 9,
@@ -23,6 +25,7 @@ const pokemonList = [
   },
   {
     name: '盖诺赛克特',
+    types: ['钢', '虫'], 
     preference: '输出',
     envScore: 7.5,
     abilityScore: 6,
@@ -33,6 +36,7 @@ const pokemonList = [
   },
   {
     name: '重泥挽马',
+    types: ['地'], 
     preference: '全能',
     envScore: 9,
     abilityScore: 10,
@@ -43,6 +47,7 @@ const pokemonList = [
   },
   {
     name: '重摇滚皮卡丘',
+    types: ['钢', '电'], 
     preference: '输出',
     envScore: 8,
     abilityScore: 9,
@@ -53,6 +58,7 @@ const pokemonList = [
   },
   {
     name: '葱游兵大葱鸭',
+    types: ['毒', '飞'], 
     preference: '输出',
     envScore: 7.5,
     abilityScore: 9,
@@ -63,6 +69,7 @@ const pokemonList = [
   },
   {
     name: '土王',
+    types: ['毒', '地'], 
     preference: '肉盾',
     envScore: 9,
     abilityScore: 8,
@@ -73,6 +80,7 @@ const pokemonList = [
   },
   {
     name: '卡璞哞哞',
+    types: ['妖', '草'], 
     preference: '输出',
     envScore: 7.5,// 环境评分 0-10
     abilityScore: 7,// 特性评分 0-10
@@ -83,6 +91,7 @@ const pokemonList = [
   },
   {
     name: '甲贺忍蛙',
+    types: ['恶', '水'], 
     preference: '输出',
     envScore: 8,// 环境评分 0-10
     abilityScore: 8,// 特性评分 0-10
@@ -93,6 +102,7 @@ const pokemonList = [
   },
   {
     name: '玛机雅娜',
+    types: ['妖', '钢'], 
     preference: '全能',
     envScore: 8,// 环境评分 0-10
     abilityScore: 8.5,// 特性评分 0-10
